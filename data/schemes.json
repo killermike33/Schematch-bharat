@@ -1,0 +1,336 @@
+[
+  {
+    "scheme_id": "SCH001",
+    "scheme_name": "Pre-Matric Scholarship for Students with Disabilities",
+    "category": "Disability",
+    "issuing_body": "Department of Empowerment of Persons with Disabilities (DEPwD), Ministry of Social Justice & Empowerment",
+    "eligibility_conditions": [
+      "Indian national",
+      "Student with benchmark disability (40% or more disability) as per Rights of Persons with Disabilities Act, 2016",
+      "Studying in Class IX or X",
+      "Enrolled in a Government school or Government-recognized school",
+      "Regular, full-time student",
+      "Parental income not exceeding Rs. 2.5 lakh per annum",
+      "Valid Aadhaar card or Aadhaar enrollment",
+      "UDID or UDID enrollment number",
+      "Not more than 2 siblings already availing the scheme",
+      "Not availing any other scholarship simultaneously"
+    ],
+    "required_documents": [
+      "Valid disability certificate (40% or more) from competent authority",
+      "Aadhaar card or Aadhaar enrollment number",
+      "UDID card or UDID enrollment number",
+      "Income certificate of parent/guardian (from Revenue Officer)",
+      "Proof of age (birth certificate or school record)",
+      "Photograph",
+      "School enrollment/admission proof",
+      "Bank account details (Aadhaar-linked)"
+    ],
+    "office_to_visit": "State Nodal Officer / Education or Welfare Department of the student's home state; Department of Empowerment of Persons with Disabilities, 5th Floor, B Wing, Pt. Deendayal Antyodaya Bhawan, CGO Complex, New Delhi-110003",
+    "application_link": "https://www.scholarships.gov.in",
+    "financial_assistance": {
+      "maintenance_allowance": "Rs. 800/month (hostellers), Rs. 500/month (day scholars)",
+      "disability_allowance": "Rs. 4,000/year (Visual/Intellectual), Rs. 2,000/year (others)",
+      "book_allowance": "Rs. 1,000/year"
+    }
+  },
+  {
+    "scheme_id": "SCH002",
+    "scheme_name": "Post-Matric Scholarship for Students with Disabilities",
+    "category": "Disability",
+    "issuing_body": "Department of Empowerment of Persons with Disabilities (DEPwD), Ministry of Social Justice & Empowerment",
+    "eligibility_conditions": [
+      "Indian national",
+      "Student with benchmark disability (40% or more disability) as per Rights of Persons with Disabilities Act, 2016",
+      "Pursuing post-matriculation or post-secondary courses up to Master's degree level",
+      "Enrolled in recognized institution or university",
+      "Parental income not exceeding Rs. 2.5 lakh per annum",
+      "Valid Aadhaar card and biometric authentication",
+      "UDID or UDID enrollment number",
+      "Not availing any other scholarship simultaneously",
+      "Not more than 2 siblings availing the scheme",
+      "Correspondence/distance education students are also eligible"
+    ],
+    "required_documents": [
+      "Valid disability certificate (40% or more) from competent authority",
+      "Aadhaar card or Aadhaar enrollment number",
+      "UDID card or UDID enrollment number",
+      "Income certificate of parent/guardian",
+      "Proof of age",
+      "Photograph",
+      "Tuition fee receipt",
+      "Last academic qualification certificate",
+      "Bank account details (Aadhaar-linked)"
+    ],
+    "office_to_visit": "State Nodal Officer / Education or Welfare Department of the student's home state; Department of Empowerment of Persons with Disabilities, 5th Floor, B Wing, Pt. Deendayal Antyodaya Bhawan, CGO Complex, New Delhi-110003",
+    "application_link": "https://www.scholarships.gov.in",
+    "financial_assistance": {
+      "tuition_fee": "Up to Rs. 1.40 lakh/year (actual)",
+      "miscellaneous_fee": "Up to Rs. 10,000/year",
+      "maintenance_allowance": "Rs. 1,200/month (hostellers), Rs. 650/month (day scholars)",
+      "disability_allowance": "Rs. 4,000/year (Visual/Intellectual), Rs. 2,000/year (others)",
+      "book_allowance": "Rs. 1,500/year"
+    }
+  },
+  {
+    "scheme_id": "SCH003",
+    "scheme_name": "Top Class Education Scholarship for Students with Disabilities",
+    "category": "Disability",
+    "issuing_body": "Department of Empowerment of Persons with Disabilities (DEPwD), Ministry of Social Justice & Empowerment",
+    "eligibility_conditions": [
+      "Indian national",
+      "Student with benchmark disability (40% or more disability)",
+      "Pursuing Graduate or Post-Graduate Degree/Diploma in notified Institutes of Excellence",
+      "Parental income not exceeding Rs. 8 lakh per annum",
+      "Valid Aadhaar and UDID",
+      "Only full-time courses eligible (no distance/part-time/weekend courses)",
+      "Award given only once per individual in a lifetime",
+      "Not availing any other scholarship simultaneously"
+    ],
+    "required_documents": [
+      "Valid disability certificate (40% or more)",
+      "Aadhaar card",
+      "UDID card",
+      "Income certificate of parent/guardian",
+      "Proof of admission in notified institution",
+      "Tuition fee receipt",
+      "Last academic qualification certificate",
+      "Bill/receipt for laptop/computer purchase (for reimbursement)",
+      "Bills/vouchers for aids and assistive devices",
+      "Photograph",
+      "Bank account details (Aadhaar-linked)"
+    ],
+    "office_to_visit": "State Nodal Officer / Education or Welfare Department; Department of Empowerment of Persons with Disabilities, 5th Floor, B Wing, Pt. Deendayal Antyodaya Bhawan, CGO Complex, New Delhi-110003",
+    "application_link": "https://www.scholarships.gov.in",
+    "financial_assistance": {
+      "tuition_fee": "Up to Rs. 1.90 lakh/year",
+      "laptop_grant": "Rs. 45,000 one-time",
+      "aids_devices_grant": "Rs. 30,000 one-time",
+      "maintenance_allowance": "Rs. 3,000/month (hostellers), Rs. 1,500/month (day scholars)",
+      "special_allowance": "Rs. 2,000/month",
+      "book_allowance": "Rs. 5,000/year"
+    }
+  },
+  {
+    "scheme_id": "SCH004",
+    "scheme_name": "National Overseas Scholarship for Persons with Disabilities",
+    "category": "Disability",
+    "issuing_body": "Department of Empowerment of Persons with Disabilities (DEPwD), Ministry of Social Justice & Empowerment",
+    "eligibility_conditions": [
+      "Indian national",
+      "Student with benchmark disability (40% or more disability)",
+      "Below 35 years of age as on 1st April of selection year",
+      "55% marks or equivalent grade in qualifying degree",
+      "For PhD: 55% in relevant Master's degree",
+      "For Master's: 55% in relevant Bachelor's degree",
+      "Parental income not exceeding Rs. 8 lakh per annum",
+      "Valid Aadhaar and UDID",
+      "Unconditional or compatible conditional offer from top 500 QS-ranked foreign university",
+      "Not pursuing/completed Master's or PhD abroad with government scholarship previously",
+      "Award given only once in a lifetime",
+      "Not pursuing courses in Indian Culture/Heritage/History/Social Studies topics"
+    ],
+    "required_documents": [
+      "Valid disability certificate (40% or more)",
+      "Aadhaar card",
+      "UDID card",
+      "Income certificate",
+      "Educational qualification certificates (55% marks)",
+      "Offer letter from foreign university",
+      "Police verification report",
+      "No Objection Certificate (if employed)",
+      "Surety bond on non-judicial stamp paper (Rs. 50,000)",
+      "Solvency certificate (Rs. 50,000)",
+      "Passport"
+    ],
+    "office_to_visit": "Department of Empowerment of Persons with Disabilities, 5th Floor, B Wing, Pt. Deendayal Antyodaya Bhawan, CGO Complex, New Delhi-110003. Email: sandeepkumar.rth@nic.in",
+    "application_link": "https://depwd.gov.in/"
+  },
+  {
+    "scheme_id": "SCH005",
+    "scheme_name": "National Fellowship for Persons with Disabilities (NFPwD)",
+    "category": "Disability",
+    "issuing_body": "Department of Empowerment of Persons with Disabilities (DEPwD) via NDFDC",
+    "eligibility_conditions": [
+      "Indian national",
+      "Student with benchmark disability (40% or more disability)",
+      "Pursuing regular and full-time M.Phil or PhD in UGC-recognized university",
+      "Qualified in UGC-NET JRF or UGC-CSIR NET-JRF test",
+      "No income ceiling",
+      "Not employed in any university/college/government institution (even on study leave)",
+      "Not availing any other scholarship or stipend",
+      "Fellowship can be availed only once in a lifetime"
+    ],
+    "required_documents": [
+      "Valid disability certificate (40% or more)",
+      "Aadhaar card",
+      "UDID card",
+      "UGC-NET JRF or CSIR-NET JRF score card",
+      "Admission letter from university for M.Phil/PhD",
+      "University registration certificate",
+      "Bank account details (Aadhaar-linked)"
+    ],
+    "office_to_visit": "National Divyangjan Finance and Development Corporation (NDFDC); Department of Empowerment of Persons with Disabilities, CGO Complex, New Delhi-110003",
+    "application_link": "https://depwd.gov.in/"
+  },
+  {
+    "scheme_id": "SCH006",
+    "scheme_name": "Free Coaching Scholarship for Students with Disabilities",
+    "category": "Disability",
+    "issuing_body": "Department of Empowerment of Persons with Disabilities (DEPwD)",
+    "eligibility_conditions": [
+      "Indian national",
+      "Student with benchmark disability (40% or more disability)",
+      "Valid Aadhaar and UDID",
+      "Family income not exceeding Rs. 8 lakh per annum",
+      "Not availing benefit of any other coaching scheme from Centre or State Government",
+      "Not more than 2 siblings availing the scheme",
+      "Benefits can be availed only once",
+      "For Class XII-level exams: must have passed or be studying in Class XII",
+      "For bachelor-level exams: must have completed or be in final year of bachelor's degree"
+    ],
+    "required_documents": [
+      "Valid disability certificate (40% or more)",
+      "Aadhaar card",
+      "UDID card",
+      "Income certificate",
+      "Educational qualification certificates",
+      "Declaration of not availing other coaching scheme",
+      "Bank account details (Aadhaar-linked)"
+    ],
+    "office_to_visit": "Implementing Agencies (National Institutes and Composite Regional Centres under DEPwD); Department of Empowerment of Persons with Disabilities, CGO Complex, New Delhi",
+    "application_link": "https://depwd.gov.in/",
+    "financial_assistance": {
+      "stipend": "Rs. 4,000/month",
+      "disability_allowance": "Rs. 2,000/month",
+      "book_allowance": "Rs. 5,000 per course (one-time)"
+    }
+  },
+  {
+    "scheme_id": "SCH007",
+    "scheme_name": "Central Sector Scheme of Top Class Education for OBC, EBC and DNT Students",
+    "category": "OBC/EBC/DNT",
+    "issuing_body": "Ministry of Social Justice and Empowerment",
+    "eligibility_conditions": [
+      "Student belonging to OBC, EBC, or DNT category",
+      "Total annual family income from all sources not exceeding Rs. 2.5 lakh",
+      "Secured admission in a full-time course in a notified 'Top Class' institution",
+      "Admission must be based on general selection criteria of institution",
+      "Not more than 2 siblings availing benefit in a family",
+      "Must get promoted to next semester/class for renewal",
+      "Students from IITs, IIMs, IIITs, AIIMSs, NITs, NIFTs, NIDs, Hotel Management Institutes, National Law Universities eligible",
+      "For private institutions not in above list: must be NAAC A++ or A+ or Top 100 NIRF or Institution of National Importance"
+    ],
+    "required_documents": [
+      "OBC/EBC/DNT caste certificate issued by competent authority",
+      "Income certificate (annual family income up to Rs. 2.5 lakh)",
+      "Admission rank/merit proof for the respective entrance exam",
+      "Fee payment receipt",
+      "Bank account details",
+      "Affidavit confirming not the third sibling availing the scheme",
+      "Aadhaar card"
+    ],
+    "office_to_visit": "Respective notified institution's scholarship coordinator; Ministry of Social Justice and Empowerment, Shastri Bhawan, New Delhi",
+    "application_link": "https://www.scholarships.gov.in",
+    "financial_assistance": {
+      "tuition_fee": "Full tuition fee (up to Rs. 2 lakh/year for private, full for government)",
+      "living_expenses": "Rs. 3,000/month",
+      "books_stationery": "Rs. 5,000/year",
+      "laptop_grant": "Rs. 45,000 one-time"
+    }
+  },
+  {
+    "scheme_id": "SCH008",
+    "scheme_name": "Ishan Uday Special Scholarship Scheme for North Eastern Region",
+    "category": "North Eastern Region",
+    "issuing_body": "University Grants Commission (UGC)",
+    "eligibility_conditions": [
+      "Student passed Class XII or equivalent from a school situated within North Eastern Region (NER)",
+      "Pursuing first UG Degree programme only",
+      "Admitted in first year of UG degree programme in eligible university/college in India",
+      "Parental income below Rs. 4.5 lakh per annum",
+      "Must have a valid Domicile Certificate of any NER state",
+      "Regular/Full Time mode only (no open/distance/correspondence/private/part-time)",
+      "Students admitted through Management Quota not eligible",
+      "Not availing any other scholarship simultaneously",
+      "Institution must have valid AISHE code and NAAC accreditation (from AY 2025-26)"
+    ],
+    "required_documents": [
+      "Class XII marksheet from NER school",
+      "Domicile Certificate of NER state",
+      "Income certificate (parental income below Rs. 4.5 lakh)",
+      "Admission letter from university/college",
+      "Aadhaar card (Aadhaar-linked bank account mandatory)",
+      "KYC-compliant bank account details",
+      "Caste certificate (if applicable)"
+    ],
+    "office_to_visit": "University Grants Commission, Selection & Awards Bureau, Bahadur Shah Zafar Marg, New Delhi-110002",
+    "application_link": "https://www.scholarships.gov.in",
+    "financial_assistance": {
+      "scholarship": "Rs. 8,000/month for 10 months per year"
+    }
+  },
+  {
+    "scheme_id": "SCH009",
+    "scheme_name": "AICTE Pragati Scholarship Scheme for Girl Students (Degree)",
+    "category": "Women/Girls",
+    "issuing_body": "All India Council for Technical Education (AICTE)",
+    "eligibility_conditions": [
+      "Must be a girl student",
+      "Admitted to First year of Degree level course OR Second year through lateral entry in AICTE-approved institution",
+      "Maximum two girl children per family are eligible",
+      "Family income from all sources not more than Rs. 8 lakh per annum",
+      "Valid income certificate issued by State/UT Government required",
+      "Gap between qualifying exam and admission should not be more than two years",
+      "Not availing any other scholarship or financial assistance",
+      "Must not fail/drop out in subsequent years"
+    ],
+    "required_documents": [
+      "Income certificate issued by State/UT Government (family income up to Rs. 8 lakh)",
+      "Marksheet of qualifying exam (10+2 or equivalent)",
+      "Admission letter from AICTE-approved institution",
+      "Aadhaar card",
+      "Bank account details (in student's own name, KYC compliant)",
+      "Caste certificate (if applicable for reservation)",
+      "Class 10 marksheet (for tie-breaking)"
+    ],
+    "office_to_visit": "AICTE, Nelson Mandela Marg, Vasant Kunj, New Delhi-110070; Department of Technical Education of respective State/UT",
+    "application_link": "https://www.scholarships.gov.in",
+    "financial_assistance": {
+      "scholarship": "Rs. 50,000/year for up to 4 years (first year entry) or 3 years (lateral entry)"
+    }
+  },
+  {
+    "scheme_id": "SCH010",
+    "scheme_name": "PM-USP Central Sector Scheme of Scholarship for College and University Students (PM-USP CSSS)",
+    "category": "Merit-Based / General",
+    "issuing_body": "Ministry of Education, Government of India",
+    "eligibility_conditions": [
+      "Students above 80th percentile of successful candidates in relevant stream from respective Board in Class XII",
+      "Pursuing regular degree courses only (not correspondence, distance mode, or diploma courses)",
+      "Enrolled in colleges/institutions recognized by AICTE and respective regulatory bodies",
+      "Not availing any other scholarship or fee waiver/reimbursement scheme",
+      "Gross parental/family income up to Rs. 4.5 lakh per annum",
+      "Must maintain at least 50% marks in annual examination for renewal",
+      "Must maintain at least 75% attendance for renewal",
+      "No disciplinary/criminal complaints including ragging",
+      "Must apply online on National Scholarships Portal"
+    ],
+    "required_documents": [
+      "Class XII marksheet (above 80th percentile in Board exam)",
+      "Income certificate (parental/family income up to Rs. 4.5 lakh)",
+      "Caste certificate (for SC/ST/OBC reservation)",
+      "Disability certificate (for 5% horizontal reservation, if applicable)",
+      "Aadhaar card",
+      "Bank account details (student's own account for DBT)",
+      "Admission proof from institution with valid AISHE code"
+    ],
+    "office_to_visit": "National Scholarship Division, Department of Higher Education, Ministry of Education, West Block 1, 2nd Floor, Wing 6, Room No. 6, R.K. Puram, Sector 1, New Delhi-110066. Tel: 011-20862360. Email: ns1-scholarship@gov.in",
+    "application_link": "https://www.scholarships.gov.in",
+    "financial_assistance": {
+      "graduation_rate": "Rs. 12,000/year (first 3 years)",
+      "postgraduation_rate": "Rs. 20,000/year",
+      "professional_4th_5th_year": "Rs. 20,000/year"
+    }
+  }
+]
