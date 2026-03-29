@@ -1,21 +1,515 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/ashoka.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="SchemeMatch Bharat – Find government schemes you are eligible for" />
-    <title>SchemeMatch Bharat | सरकारी योजना खोजें</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Serif:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SchemeMatch Bharat — Government Scheme Finder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            saffron: { 50:'#fff7ed',100:'#ffedd5',200:'#fed7aa',400:'#fb923c',500:'#FF9933',700:'#c2410c' },
+            navy:    { 50:'#eef2ff',100:'#e0e7ff',500:'#002366',600:'#1e3a8a' },
+          }
+        }
+      }
+    }
+  </script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family:'Noto Sans',system-ui,sans-serif; background:#f5f5f0; color:#1a1a2e; -webkit-font-smoothing:antialiased; }
+    .tricolor-bar { height:4px; background:linear-gradient(to right,#FF9933 0%,#FF9933 33.3%,#fff 33.3%,#fff 66.6%,#138808 66.6%,#138808 100%); }
+    .scheme-card { animation:slideUp .35s ease-out forwards; opacity:0; }
+    .scheme-card:nth-child(1){animation-delay:.04s}
+    .scheme-card:nth-child(2){animation-delay:.08s}
+    .scheme-card:nth-child(3){animation-delay:.12s}
+    .scheme-card:nth-child(4){animation-delay:.16s}
+    .scheme-card:nth-child(5){animation-delay:.20s}
+    @keyframes slideUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+    .animate-spin  { animation:spin 1s linear infinite; display:inline-block; }
+    .animate-pulse { animation:pulse 2s ease-in-out infinite; }
+    .relevance-high   { background:#d4edda; color:#155724; }
+    .relevance-medium { background:#fff3cd; color:#856404; }
+    .relevance-low    { background:#f8d7da; color:#721c24; }
+    textarea:focus { outline:none; box-shadow:0 0 0 3px rgba(255,153,51,.3); }
+    ::-webkit-scrollbar{width:6px} ::-webkit-scrollbar-thumb{background:#c5c5c5;border-radius:3px}
+    .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ── CONFIG: change port here if needed ── */
+const API_BASE = 'http://localhost:8000';
+
+/* ── API ── */
+async function searchSchemes(query, topK = 5) {
+  const res = await fetch(`${API_BASE}/search`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, top_k: topK }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `Server error ${res.status}`);
+  }
+  return res.json();
+}
+
+/* ── CATEGORY COLORS ── */
+const CAT = {
+  'Disability':         'bg-blue-50 text-blue-700 border-blue-200',
+  'Agriculture':        'bg-green-50 text-green-700 border-green-200',
+  'Education':          'bg-indigo-50 text-indigo-700 border-indigo-200',
+  'Women & Children':   'bg-pink-50 text-pink-700 border-pink-200',
+  'Health':             'bg-red-50 text-red-700 border-red-200',
+  'Housing':            'bg-yellow-50 text-yellow-700 border-yellow-200',
+  'Employment & Skill': 'bg-orange-50 text-orange-700 border-orange-200',
+  'Social Welfare':     'bg-purple-50 text-purple-700 border-purple-200',
+  'Finance & Banking':  'bg-teal-50 text-teal-700 border-teal-200',
+  'Energy':             'bg-amber-50 text-amber-700 border-amber-200',
+  'Minority & SC/ST':   'bg-lime-50 text-lime-700 border-lime-200',
+};
+const catCls = c => CAT[c] || 'bg-gray-50 text-gray-700 border-gray-200';
+
+/* ── ASHOKA CHAKRA ── */
+function Chakra({ size=40 }) {
+  const spokes = Array.from({length:24},(_,i)=>{
+    const r=(i*Math.PI*2)/24;
+    return {x1:50+6*Math.cos(r),y1:50+6*Math.sin(r),x2:50+43*Math.cos(r),y2:50+43*Math.sin(r)};
+  });
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden>
+      <circle cx="50" cy="50" r="46" fill="none" stroke="#000080" strokeWidth="3"/>
+      <circle cx="50" cy="50" r="6" fill="#000080"/>
+      {spokes.map((s,i)=><line key={i} {...s} stroke="#000080" strokeWidth="2.2" strokeLinecap="round"/>)}
+    </svg>
+  );
+}
+
+/* ── HEADER ── */
+function Header() {
+  return (
+    <header className="bg-white border-b border-gray-200 shadow-sm">
+      <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Chakra size={42}/>
+          <div>
+            <div className="font-bold text-xl leading-tight" style={{color:'#002366'}}>SchemeMatch Bharat</div>
+            <div className="text-xs text-gray-500 tracking-wide">Government Scheme Finder · भारत सरकार</div>
+          </div>
+        </div>
+        <nav className="hidden md:flex items-center gap-5 text-sm">
+          <a href="https://www.india.gov.in" target="_blank" rel="noopener" className="text-gray-500 hover:text-blue-700">India.gov.in</a>
+          <a href="https://www.scholarships.gov.in" target="_blank" rel="noopener" className="text-gray-500 hover:text-blue-700">NSP Portal</a>
+          <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">Beta</span>
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+/* ── HERO ── */
+const EXAMPLES = [
+  'Girl student in engineering college with family income below 5 lakh',
+  'Person with 60% disability wanting to pursue PhD',
+  'OBC student admitted to IIT for BTech',
+  'Farmer in Maharashtra affected by drought',
+  'Widow aged 55 in rural Rajasthan seeking pension',
+];
+
+function Hero({ searched, onExample }) {
+  if (searched) return (
+    <div className="bg-white border-b border-gray-100 py-4">
+      <div className="max-w-3xl mx-auto px-4">
+        <h1 className="font-semibold text-lg" style={{color:'#002366'}}>Find Your Matching Schemes</h1>
+      </div>
+    </div>
+  );
+  return (
+    <section className="bg-white py-12 border-b border-gray-100">
+      <div className="max-w-3xl mx-auto px-4 text-center">
+        <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-700 text-xs font-medium px-3 py-1 rounded-full mb-6">
+          🇮🇳 Government of India · AI-Powered Scheme Finder
+        </div>
+        <h1 className="font-bold text-3xl md:text-4xl text-gray-900 leading-tight mb-3">
+          Find the Government Schemes <span style={{color:'#002366'}}>You Are Eligible For</span>
+        </h1>
+        <p className="text-gray-500 text-base mb-1" style={{fontFamily:"'Noto Sans Devanagari',sans-serif"}}>
+          अपनी पात्रता के अनुसार सरकारी योजनाएं खोजें
+        </p>
+        <p className="text-gray-500 text-sm mb-8 max-w-xl mx-auto">
+          Describe your background in plain language — our AI matches you to scholarships, welfare programs, and schemes from 1500+ official sources.
+        </p>
+        <p className="text-xs font-medium text-gray-400 mb-2">EXAMPLE SEARCHES · click to fill</p>
+        <div className="flex flex-wrap gap-2 justify-center">
+          {EXAMPLES.map((q,i)=>(
+            <button key={i} onClick={()=>onExample(q)}
+              className="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full border border-gray-200 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-700 transition-colors">
+              {q}
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── SEARCH BOX ── */
+function SearchBox({ onSearch, loading, onReset, prefill, clearPrefill }) {
+  const [input, setInput] = useState('');
+
+  useEffect(()=>{ if(prefill){ setInput(prefill); clearPrefill(); } },[prefill]);
+
+  const submit = e => { e?.preventDefault(); if(input.trim()&&!loading) onSearch(input.trim()); };
+
+  return (
+    <div className="mt-6">
+      <form onSubmit={submit}>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-md overflow-hidden focus-within:border-orange-400 transition-all">
+          <label htmlFor="q" className="block px-5 pt-4 text-xs font-semibold text-gray-400 uppercase tracking-widest">
+            Describe your situation
+          </label>
+          <textarea id="q" rows={3}
+            className="w-full px-5 py-3 text-gray-800 text-base bg-transparent border-0 resize-none placeholder-gray-300 focus:outline-none"
+            placeholder="e.g. I am a girl student from Nagaland pursuing BTech. Family income is 3 lakh per year..."
+            value={input} onChange={e=>setInput(e.target.value)}
+            onKeyDown={e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')submit();}}
+            disabled={loading} maxLength={500}/>
+          <div className="px-5 pb-4 flex items-center justify-between">
+            <span className="text-xs text-gray-300">{input.length}/500 · Ctrl+Enter to search</span>
+            <div className="flex gap-2">
+              {onReset&&(
+                <button type="button" onClick={()=>{setInput('');onReset();}}
+                  className="px-4 py-2 text-sm font-medium text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                  Clear
+                </button>
+              )}
+              <button type="submit" disabled={loading||!input.trim()}
+                className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white rounded-xl shadow-sm disabled:bg-gray-300 transition-colors"
+                style={{backgroundColor:(loading||!input.trim())?undefined:'#002366'}}>
+                {loading ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"/>
+                      <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4z" className="opacity-75"/>
+                    </svg>
+                    Searching…
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
+                    </svg>
+                    Check Eligibility
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+      <p className="mt-2 text-xs text-center text-gray-400">Include: state · caste · disability · income · course level</p>
+    </div>
+  );
+}
+
+/* ── SCHEME CARD ── */
+function SchemeCard({ scheme, rank }) {
+  const [open, setOpen] = useState(false);
+  const elig = Array.isArray(scheme.eligibility_conditions)?scheme.eligibility_conditions:[];
+  const docs  = Array.isArray(scheme.required_documents)?scheme.required_documents:[];
+  const fin   = (scheme.financial_assistance&&typeof scheme.financial_assistance==='object')?scheme.financial_assistance:{};
+  const pct   = Math.round(scheme.relevance_score*100);
+  const bdg   = pct>=70?'relevance-high':pct>=40?'relevance-medium':'relevance-low';
+
+  return (
+    <div className="scheme-card bg-white rounded-2xl border border-gray-200 overflow-hidden" style={{boxShadow:'0 1px 6px rgba(0,0,0,0.08)'}}>
+
+      {/* Header */}
+      <div className="px-6 pt-5 pb-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3 flex-1 min-w-0">
+            <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border"
+              style={{color:'#002366',background:'#eef2ff',borderColor:'#c7d2fe'}}>{rank}</span>
+            <div className="min-w-0">
+              <h3 className="font-semibold text-gray-900 text-base leading-snug line-clamp-2">{scheme.scheme_name}</h3>
+              <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                {scheme.issuing_body&&<p className="text-xs text-gray-400 truncate">{scheme.issuing_body}</p>}
+                {scheme.state&&<span className="text-xs font-medium text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded flex-shrink-0">📍 {scheme.state}</span>}
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${bdg}`}>{pct}% match</span>
+            <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${catCls(scheme.category)}`}>{scheme.category}</span>
+          </div>
+        </div>
+        {scheme.description&&(
+          <p className="mt-3 text-sm text-gray-600 leading-relaxed line-clamp-2">{scheme.description}</p>
+        )}
+      </div>
+
+      <div className="h-px bg-gray-100 mx-6"/>
+
+      {/* Docs + Office */}
+      <div className="px-6 py-4 grid md:grid-cols-2 gap-4">
+        <div>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Required Documents</p>
+          {docs.length>0?(
+            <ul className="space-y-1">
+              {docs.slice(0,4).map((d,i)=>(
+                <li key={i} className="flex items-start gap-1.5 text-sm text-gray-600">
+                  <span className="text-orange-400 flex-shrink-0">•</span><span>{d}</span>
+                </li>
+              ))}
+              {docs.length>4&&<li className="text-xs text-gray-400 pl-3">+{docs.length-4} more</li>}
+            </ul>
+          ):<p className="text-sm text-gray-400">See official portal for details</p>}
+        </div>
+        <div>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Where to Apply</p>
+          <p className="text-sm text-gray-600">{scheme.office_to_visit||'Refer to official portal'}</p>
+        </div>
+      </div>
+
+      {/* Expandable */}
+      <div className="border-t border-gray-100">
+        <button onClick={()=>setOpen(!open)}
+          className="w-full flex items-center justify-between px-6 py-3 text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">
+          <span>{open?'Hide':'Show'} eligibility &amp; financial details</span>
+          <svg className={`w-4 h-4 transition-transform ${open?'rotate-180':''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        {open&&(
+          <div className="px-6 pb-5 space-y-4">
+            {elig.length>0&&(
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Eligibility Conditions</p>
+                <ul className="space-y-1.5">
+                  {elig.map((c,i)=>(
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                      <span className="text-green-500 flex-shrink-0">✓</span>{c}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {Object.keys(fin).length>0&&(
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Financial Assistance</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(fin).map(([k,v])=>(
+                    <div key={k} className="bg-gray-50 rounded-lg px-3 py-2">
+                      <div className="text-xs text-gray-400 capitalize">{k.replace(/_/g,' ')}</div>
+                      <div className="text-sm font-medium text-gray-700">{v}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="px-6 pb-5 flex items-center justify-between">
+        <span className="text-xs text-gray-400">ID: {scheme.scheme_id}</span>
+        {scheme.application_link?(
+          <a href={scheme.application_link} target="_blank" rel="noopener"
+            className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white rounded-xl shadow-sm hover:opacity-90"
+            style={{background:'#FF9933'}}>
+            Apply Now
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+            </svg>
+          </a>
+        ):(
+          <span className="text-xs text-gray-400 italic">Visit state portal to apply</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── SKELETON ── */
+function Skeleton() {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 p-6 animate-pulse" style={{boxShadow:'0 1px 4px rgba(0,0,0,0.06)'}}>
+      <div className="flex gap-3 mb-4">
+        <div className="w-7 h-7 rounded-full bg-gray-200 flex-shrink-0"/>
+        <div className="flex-1 space-y-2">
+          <div className="h-4 bg-gray-200 rounded w-3/4"/>
+          <div className="h-3 bg-gray-100 rounded w-1/2"/>
+        </div>
+        <div className="w-16 h-5 bg-gray-200 rounded-full"/>
+      </div>
+      <div className="h-px bg-gray-100 mb-4"/>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <div className="h-3 bg-gray-100 rounded w-1/3"/>
+          <div className="h-3 bg-gray-200 rounded w-full"/>
+          <div className="h-3 bg-gray-200 rounded w-4/5"/>
+        </div>
+        <div className="space-y-2">
+          <div className="h-3 bg-gray-100 rounded w-1/3"/>
+          <div className="h-3 bg-gray-200 rounded w-full"/>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── RESULTS ── */
+function Results({ query, results, loading, error }) {
+  return (
+    <section className="max-w-3xl mx-auto px-4 pb-16">
+      {!loading&&!error&&results.length>0&&(
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h2 className="font-semibold text-gray-800 text-lg">{results.length} Scheme{results.length>1?'s':''} Found</h2>
+            {query&&<p className="text-xs text-gray-400 mt-0.5">For: "<span className="text-gray-600">{query}</span>"</p>}
+          </div>
+          <div className="text-xs bg-green-50 text-green-700 border border-green-200 px-3 py-1 rounded-full font-medium">✓ Ranked by relevance</div>
+        </div>
+      )}
+
+      {loading&&(
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+            <svg className="w-4 h-4 animate-spin text-orange-500" fill="none" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"/>
+              <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4z" className="opacity-75"/>
+            </svg>
+            Searching government scheme database…
+          </div>
+          {[1,2,3].map(i=><Skeleton key={i}/>)}
+        </div>
+      )}
+
+      {!loading&&error&&(
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+          <div className="text-3xl mb-3">⚠️</div>
+          <h3 className="font-semibold text-red-700 mb-1">Could not reach the backend</h3>
+          <p className="text-sm text-red-600 mb-2">{error}</p>
+          <p className="text-xs text-red-400">
+            Run: <code className="bg-red-100 px-1.5 py-0.5 rounded">cd backend &amp;&amp; uvicorn main:app --reload --port 8000</code>
+          </p>
+        </div>
+      )}
+
+      {!loading&&!error&&results.length===0&&query&&(
+        <div className="text-center py-16">
+          <div className="text-5xl mb-4">🔍</div>
+          <h3 className="font-semibold text-gray-700 text-lg mb-2">No matching schemes found</h3>
+          <p className="text-gray-500 text-sm max-w-md mx-auto">Try adding more details — state, disability status, income level, or course name.</p>
+        </div>
+      )}
+
+      {!loading&&!error&&results.length>0&&(
+        <div className="space-y-4">
+          {results.map((s,i)=><SchemeCard key={s.scheme_id||i} scheme={s} rank={i+1}/>)}
+          <div className="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <p className="text-xs text-amber-700 leading-relaxed">
+              <span className="font-semibold">Disclaimer:</span> AI-generated suggestions based on official documents.
+              Always verify eligibility on the official portal before applying.
+            </p>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/* ── FOOTER ── */
+function Footer() {
+  return (
+    <footer className="bg-white border-t border-gray-200 mt-auto">
+      <div className="tricolor-bar"/>
+      <div className="max-w-5xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-8">
+        <div>
+          <h4 className="font-semibold text-gray-800 mb-2">SchemeMatch Bharat</h4>
+          <p className="text-sm text-gray-500 leading-relaxed">AI-powered civic tool to help Indian citizens discover government schemes, scholarships, and welfare programs from 1500+ official sources.</p>
+        </div>
+        <div>
+          <h4 className="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-3">Official Portals</h4>
+          <ul className="space-y-1.5 text-sm">
+            {[['National Scholarship Portal','https://www.scholarships.gov.in'],
+              ['DEPwD – Disability Schemes','https://depwd.gov.in'],
+              ['India.gov.in','https://www.india.gov.in'],
+              ['PM India Schemes','https://www.pmindia.gov.in']].map(([l,h])=>(
+              <li key={h}><a href={h} target="_blank" rel="noopener" className="text-gray-500 hover:text-blue-700 transition-colors">↗ {l}</a></li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h4 className="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-3">Note</h4>
+          <p className="text-xs text-gray-500 leading-relaxed">Data sourced from 1500+ official government scheme documents across all Indian states. Always verify on the official portal before applying.</p>
+        </div>
+      </div>
+      <div className="border-t border-gray-100 py-4 text-center text-xs text-gray-400">
+        © {new Date().getFullYear()} SchemeMatch Bharat · Built for Indian Citizens 🇮🇳
+      </div>
+    </footer>
+  );
+}
+
+/* ── APP ── */
+function App() {
+  const [results, setResults]   = useState([]);
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState(null);
+  const [query, setQuery]       = useState('');
+  const [searched, setSearched] = useState(false);
+  const [prefill, setPrefill]   = useState('');
+
+  const handleSearch = async q => {
+    setLoading(true); setError(null); setSearched(true); setResults([]); setQuery(q);
+    try {
+      const d = await searchSchemes(q, 5);
+      setResults(d.results || []);
+    } catch(e) {
+      setError(e.message || 'Unable to connect. Is the backend running on port 8000?');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReset = () => { setQuery(''); setResults([]); setError(null); setSearched(false); };
+
+  return (
+    <div className="min-h-screen flex flex-col" style={{background:'#f5f5f0'}}>
+      <div className="tricolor-bar"/>
+      <Header/>
+      <main className="flex-1">
+        <Hero searched={searched} onExample={q=>setPrefill(q)}/>
+        <div className="max-w-3xl mx-auto px-4 pb-6">
+          <SearchBox
+            onSearch={handleSearch} loading={loading}
+            onReset={searched?handleReset:null}
+            prefill={prefill} clearPrefill={()=>setPrefill('')}
+          />
+        </div>
+        {searched&&<Results query={query} results={results} loading={loading} error={error}/>}
+      </main>
+      <Footer/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
 </html>

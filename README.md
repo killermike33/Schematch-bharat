@@ -14,7 +14,8 @@ schematch-bharat/
 │
 ├── scripts/
 │   ├── pdf_extractor.py      ← Reads PDFs → produces schemes.json
-│   └── db_loader.py          ← Loads schemes.json → ChromaDB
+│   ├── db_loader.py          ← Loads schemes.json → ChromaDB (original)
+│   └── dataset_loader.py     ← NEW: Loads Kaggle archive.zip → ChromaDB (1500+ schemes)
 │
 ├── backend/
 │   ├── main.py               ← FastAPI application

@@ -93,6 +93,7 @@ class FinancialAssistance(BaseModel):
 class SchemeResult(BaseModel):
     scheme_id: str
     scheme_name: str
+    state: str = ""
     category: str
     issuing_body: str
     eligibility_conditions: List[str]
@@ -100,6 +101,7 @@ class SchemeResult(BaseModel):
     financial_assistance: dict
     office_to_visit: str
     application_link: str
+    description: str = ""
     relevance_score: float
 
 
@@ -131,6 +133,7 @@ def metadata_to_result(meta: dict, distance: float) -> SchemeResult:
     return SchemeResult(
         scheme_id=meta.get("scheme_id", ""),
         scheme_name=meta.get("scheme_name", ""),
+        state=meta.get("state", ""),
         category=meta.get("category", "General"),
         issuing_body=meta.get("issuing_body", ""),
         eligibility_conditions=parse_json_field(
@@ -144,6 +147,7 @@ def metadata_to_result(meta: dict, distance: float) -> SchemeResult:
         ),
         office_to_visit=meta.get("office_to_visit", ""),
         application_link=meta.get("application_link", ""),
+        description=meta.get("description", ""),
         relevance_score=relevance,
     )
 
