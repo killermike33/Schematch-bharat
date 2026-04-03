@@ -1,26 +1,27 @@
 # 🇮🇳 SchemeMatch Bharat
 
-> **AI-powered civic platform** to help Indian citizens find government schemes, scholarships, and fellowships they are eligible for.
+> **AI-powered civic platform** to help Indian citizens discover government schemes, scholarships, and welfare programs they are eligible for — powered by semantic search over 1500+ official government documents.
 
 ---
 
-## 📁 Folder Structure
+## 📁 Project Structure
 
 ```
-schematch-bharat/
+Schematch-bharat/
 ├── data/
-│   ├── schemes.json          ← Extracted scheme data (pre-filled from PDFs)
-│   └── chroma_db/            ← ChromaDB vector database (auto-created)
+│   ├── schemes.json          ← Small hand-crafted scheme dataset (10 schemes)
+│   ├── archive.zip           ← Full Kaggle dataset (1500+ schemes from all states)
+│   └── chroma_db/            ← ChromaDB vector database (auto-created on load)
 │
 ├── scripts/
-│   ├── pdf_extractor.py      ← Reads PDFs → produces schemes.json
-│   ├── db_loader.py          ← Loads schemes.json → ChromaDB (original)
-│   └── dataset_loader.py     ← NEW: Loads Kaggle archive.zip → ChromaDB (1500+ schemes)
+│   ├── pdf_extractor.py      ← Extracts scheme data from PDF files → schemes.json
+│   ├── db_loader.py          ← Loads schemes.json → ChromaDB
+│   └── dataset_loader.py     ← Loads archive.zip (full Kaggle dataset) → ChromaDB
 │
 ├── backend/
-│   ├── main.py               ← FastAPI application
+│   ├── main.py               ← FastAPI application (search API)
 │   ├── requirements.txt      ← Python dependencies
-│   └── .env.example          ← Backend config template
+│   └── .env.example          ← Backend environment config template
 │
 ├── frontend/
 │   ├── src/
@@ -35,150 +36,138 @@ schematch-bharat/
 │   │   │   ├── ResultsPanel.jsx
 │   │   │   └── Footer.jsx
 │   │   └── services/
-│   │       └── api.js
+│   │       └── api.js        ← Points to backend at http://localhost:8000
 │   ├── index.html
 │   ├── package.json
 │   ├── vite.config.js
-│   ├── tailwind.config.js
-│   └── .env.example
+│   └── tailwind.config.js
 │
 └── README.md
 ```
 
 ---
 
-## 🚀 Quick Start (Step-by-Step)
+## ⚙️ Prerequisites
 
-### Prerequisites
+| Tool    | Version | Install |
+|---------|---------|---------|
+| Python  | ≥ 3.9   | https://python.org (use the **official installer**, NOT the Windows Store version) |
+| Node.js | ≥ 18    | https://nodejs.org |
+| npm     | ≥ 9     | Included with Node.js |
 
-| Tool    | Version   | Install                          |
-|---------|-----------|----------------------------------|
-| Python  | ≥ 3.9     | https://python.org               |
-| Node.js | ≥ 18      | https://nodejs.org               |
-| npm     | ≥ 9       | Included with Node.js            |
-
----
-
-### Step 1 — Clone / Extract the project
-
-```bash
-# Navigate to the project folder
-cd schematch-bharat
-```
+> **Windows users:** Always use `py` instead of `python` in your terminal to avoid the Windows Store Python issue.
 
 ---
 
-### Step 2 — Set up the Python backend
+## 🚀 Setup & Run (Step-by-Step)
+
+You need **two terminals open at the same time** — one for the backend, one for the frontend.
+
+---
+
+### Step 1 — Install Python dependencies
+
+Open a terminal in your project root (`Schematch-bharat/`) and run:
 
 ```bash
-# Create a virtual environment (recommended)
-python -m venv venv
-
-# Activate it
-# On macOS/Linux:
-source venv/bin/activate
-# On Windows:
-venv\Scripts\activate
-
-# Install all Python dependencies
 pip install -r backend/requirements.txt
 ```
 
+> If `pip` doesn't work, try `py -m pip install -r backend/requirements.txt`
+
 ---
 
-### Step 3 — (Optional) Extract your own PDFs
+### Step 2 — Load schemes into ChromaDB
 
-> **Skip this step** if you want to use the pre-filled `data/schemes.json`.
+This step populates the vector database. **You only need to do this once.**
 
+**Option A — Full dataset (recommended, 1500+ schemes):**
 ```bash
-# Place your PDF files in a folder, e.g. ./pdfs/
-mkdir pdfs
-# Copy your PDF files there...
-
-# Run the extractor
-python scripts/pdf_extractor.py --pdf_dir ./pdfs --output ./data/schemes.json
+py scripts/dataset_loader.py --zip_path ./data/archive.zip --db_path ./data/chroma_db --reset
 ```
 
----
-
-### Step 4 — Load schemes into ChromaDB
-
-This creates the vector database used for semantic search.
-
+**Option B — Small dataset (10 schemes, faster):**
 ```bash
- \
-  --schemes ./data/schemes.json \
-  --db_path ./data/chroma_db
+py scripts/db_loader.py --schemes ./data/schemes.json --db_path ./data/chroma_db
 ```
 
-Expected output:
+Wait for it to finish. You should see:
 ```
-[INFO] Loaded 10 schemes from ./data/schemes.json
-[INFO] ChromaDB initialized at: .../data/chroma_db
-[INFO] Loading embedding model: all-MiniLM-L6-v2 ...
-[INFO] Model loaded.
-[INFO] Creating embeddings for 10 schemes...
-[DONE] Stored 10 schemes in ChromaDB collection 'schemes'
-[VERIFY] Collection now contains 10 records.
+[INFO] ChromaDB ready. Collection 'schemes' has 1520 records.
 ```
 
-> **Note:** The first run downloads the embedding model (~90 MB). Subsequent runs are instant.
+> The first run downloads the embedding model (~90 MB). Subsequent runs are instant.
 
 ---
 
-### Step 5 — Start the FastAPI backend
+### Step 3 — Start the backend (Terminal 1)
 
 ```bash
 cd backend
-uvicorn main:app --reload --port 8000
+py -m uvicorn main:app --reload --port 8000
 ```
 
-Test it:
-```bash
-curl http://localhost:8000/health
-# → {"status":"ok","model_loaded":true,"db_connected":true,"scheme_count":10}
+You should see:
+```
+[INFO] Embedding model ready.
+[INFO] ChromaDB ready. Collection 'schemes' has 1520 records.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000
 ```
 
-Interactive API docs: http://localhost:8000/docs
+**Keep this terminal open.** The backend must stay running for the site to work.
+
+Test it by visiting: http://localhost:8000/health
 
 ---
 
-### Step 6 — Start the React frontend
+### Step 4 — Start the frontend (Terminal 2)
 
-Open a **new terminal**:
+Open a **new terminal** in the project root:
 
 ```bash
 cd frontend
-
-# Install npm packages
 npm install
-
-# Start development server
 npm run dev
 ```
 
-Open your browser: **http://localhost:3000**
+You should see:
+```
+VITE v8.x  ready in Xms
+➜  Local:   http://localhost:3000/
+```
+
+---
+
+### Step 5 — Open the website
+
+Go to **http://localhost:3000** in your browser.
+
+Type your situation in the search box, for example:
+> *"I am a girl from Nagaland pursuing BTech. My family income is 5 lakhs per year."*
+
+Click **Check Eligibility** and matching government schemes will appear.
 
 ---
 
 ## 🌐 How It Works
 
 ```
-User Query
-    │
-    ▼
-React Frontend (port 3000)
-    │  POST /api/search  { "query": "..." }
-    ▼
-FastAPI Backend (port 8000)
-    │  1. Embed query with SentenceTransformer
-    │  2. Query ChromaDB (cosine similarity)
-    │  3. Return top-K matched schemes
-    ▼
-ChromaDB (local)
-    │  Stores 384-dim vectors + metadata
-    ▼
-JSON Response → SchemeCards rendered
+User types their situation
+        │
+        ▼
+React Frontend (localhost:3000)
+        │  POST /search { "query": "..." }
+        ▼
+FastAPI Backend (localhost:8000)
+        │  1. Embeds query using SentenceTransformer (all-MiniLM-L6-v2)
+        │  2. Runs cosine similarity search against ChromaDB
+        │  3. Returns top-K matching schemes with relevance scores
+        ▼
+ChromaDB (local, persistent)
+        │  Stores 384-dimensional vectors + scheme metadata
+        ▼
+Scheme cards rendered in the browser
 ```
 
 ---
@@ -186,8 +175,7 @@ JSON Response → SchemeCards rendered
 ## 🔍 API Reference
 
 ### `POST /search`
-
-Find matching schemes for a user's situation.
+Find schemes matching a user's profile.
 
 **Request:**
 ```json
@@ -220,26 +208,30 @@ Find matching schemes for a user's situation.
 ```
 
 ### `GET /health`
-Returns API and database status.
+Returns API status and record count.
 
 ### `GET /schemes`
-Returns all schemes in the database.
+Returns all schemes stored in the database.
+
+### Interactive API Docs
+Visit http://localhost:8000/docs while the backend is running.
 
 ---
 
 ## ➕ Adding More Schemes
 
-**Option A — Add PDFs** (automatic extraction):
+**Option A — Load from PDFs:**
 ```bash
-# Add new PDFs to ./pdfs/
+# Place your PDF files in ./pdfs/
 python scripts/pdf_extractor.py --pdf_dir ./pdfs --output ./data/schemes.json
 
-# Reload the database (use --reset to clear old data)
-python scripts/db_loader.py --schemes ./data/schemes.json --db_path ./data/chroma_db --reset
+# Reload the database
+py scripts/db_loader.py --schemes ./data/schemes.json --db_path ./data/chroma_db --reset
 ```
 
 **Option B — Edit `schemes.json` directly:**
-Add a new entry following this structure:
+
+Add a new entry in this format:
 ```json
 {
   "scheme_id": "SCH011",
@@ -253,70 +245,81 @@ Add a new entry following this structure:
   "application_link": "https://..."
 }
 ```
+
 Then re-run `db_loader.py`.
-
----
-
-## 🏗️ Schemes Included (v1.0)
-
-| # | Scheme Name | Category |
-|---|-------------|----------|
-| 1 | Pre-Matric Scholarship for Students with Disabilities | Disability |
-| 2 | Post-Matric Scholarship for Students with Disabilities | Disability |
-| 3 | Top Class Education Scholarship (Disability) | Disability |
-| 4 | National Overseas Scholarship (Disability) | Disability |
-| 5 | National Fellowship for Persons with Disabilities | Disability |
-| 6 | Free Coaching Scholarship (Disability) | Disability |
-| 7 | Top Class Education – OBC/EBC/DNT Students | OBC/EBC/DNT |
-| 8 | Ishan Uday – North Eastern Region | NER Students |
-| 9 | AICTE Pragati Scholarship for Girl Students | Women/Girls |
-| 10 | PM-USP Central Sector Scheme (CSSS) | Merit-Based |
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer     | Technology                        |
-|-----------|-----------------------------------|
-| Frontend  | React 18 + Vite + Tailwind CSS    |
-| Backend   | FastAPI + Uvicorn                 |
-| Embeddings| Sentence Transformers (MiniLM)    |
-| Vector DB | ChromaDB (persistent, local)      |
-| PDF Parse | pdfplumber / PyMuPDF              |
+| Layer      | Technology |
+|------------|------------|
+| Frontend   | React 18 + Vite + Tailwind CSS |
+| Backend    | FastAPI + Uvicorn |
+| Embeddings | Sentence Transformers (all-MiniLM-L6-v2) |
+| Vector DB  | ChromaDB (persistent, local) |
+| PDF Parse  | pdfplumber / PyMuPDF |
 
 ---
 
 ## 🔧 Troubleshooting
 
-**"Cannot connect to server"**
-→ Make sure `uvicorn main:app --reload --port 8000` is running in the `backend/` folder.
-
-**"Collection has 0 records"**
-→ Run `db_loader.py` again. Check that `data/schemes.json` exists and has entries.
-
-**Slow first search**
-→ Normal. The embedding model is loaded into memory on first startup.
-
-**CORS errors in browser**
-→ The Vite proxy (`/api` → `localhost:8000`) handles this. Do not call port 8000 directly from the frontend.
-
-**Port 3000 or 8000 already in use**
+### "Could not reach the backend / Failed to fetch"
+The backend is not running. Open a terminal and run:
 ```bash
-# Kill whatever is on that port (macOS/Linux)
-lsof -ti:3000 | xargs kill -9
-lsof -ti:8000 | xargs kill -9
+cd backend
+py -m uvicorn main:app --reload --port 8000
+```
+Keep this terminal open — **never close it while using the site.**
+
+### "No module named uvicorn"
+You're using the Windows Store Python. Use `py` instead of `python`:
+```bash
+py -m uvicorn main:app --reload --port 8000
+```
+
+### "Collection has 0 records"
+The database was never loaded. Run from the project root:
+```bash
+py scripts/dataset_loader.py --zip_path ./data/archive.zip --db_path ./data/chroma_db --reset
+```
+
+### "Error loading ASGI app. Could not import module 'main'"
+You're running uvicorn from the wrong folder. Make sure you `cd backend` first:
+```bash
+cd backend
+py -m uvicorn main:app --reload --port 8000
+```
+
+### npm errors during `npm install`
+Make sure you're in the `frontend/` folder, not `backend/`:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Slow first search
+Normal behaviour. The embedding model loads into memory on first startup (~5–10 seconds).
+
+### Port already in use
+```bash
+# Windows — find and kill the process on port 8000
+netstat -ano | findstr :8000
+taskkill /PID <PID> /F
 ```
 
 ---
 
 ## 📜 Data Sources
 
-All scheme data is extracted from **official Government of India documents**:
+Scheme data is sourced from official Government of India documents across all states:
 
 - Ministry of Social Justice & Empowerment (DEPwD)
 - University Grants Commission (UGC)
 - All India Council for Technical Education (AICTE)
 - Ministry of Education, Government of India
+- State government portals (all 28 states + UTs)
 
 ---
 
