@@ -295,6 +295,16 @@ def parse_json_field(value: str, fallback):
         return json.loads(value)
     except (json.JSONDecodeError, TypeError):
         return fallback
+    
+def get_default_link(state: str) -> str:
+    state_links = {
+    "Rajasthan": "https://rajssp.raj.nic.in",
+    "Maharashtra": "https://aaplesarkar.mahaonline.gov.in",
+    "Karnataka": "https://sevasindhu.karnataka.gov.in",
+    "Delhi": "https://edistrict.delhigovt.nic.in",
+    "Central Government": "https://www.india.gov.in",
+    }
+    return state_links.get(state, "https://www.india.gov.in")
 
 
 def metadata_to_result(meta: dict, final_score: float) -> SchemeResult:
@@ -308,7 +318,7 @@ def metadata_to_result(meta: dict, final_score: float) -> SchemeResult:
         required_documents=parse_json_field(meta.get("required_documents", ""), []),
         financial_assistance=parse_json_field(meta.get("financial_assistance", ""), {}),
         office_to_visit=meta.get("office_to_visit", ""),
-        application_link=meta.get("application_link", ""),
+        application_link=meta.get("application_link") or get_default_link(meta.get("state")),
         description=meta.get("description", ""),
         relevance_score=final_score,
     )
